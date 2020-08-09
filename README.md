@@ -1,4 +1,4 @@
-# frontend
+# B2B
 
 ## Project setup
 ```
