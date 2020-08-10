@@ -8,7 +8,7 @@ export default new Vuex.Store({
   state: {
     status: '',
     token: localStorage.getItem('token') || '',
-    user : {},
+    user : {}
   },
   mutations: {
     auth_request(state){
@@ -31,7 +31,7 @@ export default new Vuex.Store({
     login({commit}, user){
       return new Promise((resolve, reject) => {
         commit('auth_request')
-        axios({url: 'http://localhost:8000/api/login', data: user, method: 'POST' })
+        axios({url: `${process.env.VUE_APP_APIURL}login`, data: user, method: 'POST' })
         .then(resp => {
           const token = resp.data.token
           const user = resp.data.user
@@ -50,7 +50,7 @@ export default new Vuex.Store({
     register({commit}, user){
       return new Promise((resolve, reject) => {
         commit('auth_request')
-        axios({url: 'http://localhost:8000/api/register', data: user, method: 'POST' })
+        axios({url: `${process.env.VUE_APP_APIURL}register`, data: user, method: 'POST' })
         .then(resp => {
           console.log(resp)
           const token = resp.data.token
@@ -70,7 +70,7 @@ export default new Vuex.Store({
     resendOTP({commit}, user){
       return new Promise((resolve, reject) => {
         commit('auth_request')
-        axios({url: 'http://localhost:8000/api/resendOTP', data: user, method: 'POST' })
+        axios({url: `${process.env.VUE_APP_APIURL}resendOTP`, data: user, method: 'POST' })
         .then(resp => {
           console.log(resp)
           resolve(resp)
@@ -85,7 +85,7 @@ export default new Vuex.Store({
     verifyOTP({commit}, user){
       return new Promise((resolve, reject) => {
         commit('auth_request')
-        axios({url: 'http://localhost:8000/api/verifyotp', data: user, method: 'POST' })
+        axios({url: `${process.env.VUE_APP_APIURL}verifyotp`, data: user, method: 'POST' })
         .then(resp => {
           console.log(resp)
           const token = resp.data.token
@@ -113,7 +113,7 @@ export default new Vuex.Store({
     profileUpdate({commit}, user){
       return new Promise((resolve, reject) => {
         commit('auth_request')
-        axios({url: 'http://localhost:8000/api/profileUpdate', data: user, method: 'POST' })
+        axios({url: `${process.env.VUE_APP_APIURL}profileUpdate`, data: user, method: 'POST' })
         .then(resp => {
           console.log(resp)
           // const token = resp.data.token
@@ -132,7 +132,7 @@ export default new Vuex.Store({
     },
     getProfile({commit}){
       return new Promise((resolve, reject) => {
-        axios({url: 'http://localhost:8000/api/profile', method: 'GET' })
+        axios({url: `${process.env.VUE_APP_APIURL}profile`, method: 'GET' })
         .then(resp => {
           //console.log(resp)
           resolve(resp)

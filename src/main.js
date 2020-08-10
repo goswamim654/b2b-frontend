@@ -29,7 +29,8 @@ if (user_token) {
   Axios.defaults.headers.common['Authorization'] = `Bearer ${user_token}`
 }
 
-//Vue.prototype.$apiURI = `http://${process.env.VUE_APP_HOST}:${process.env.VUE_APP_PORT}`;
+Vue.prototype.$apiURI = `http://${process.env.VUE_APP_HOST}/public`;
+
 
 new Vue({
   router,
