@@ -52,7 +52,6 @@ export default new Vuex.Store({
         commit('auth_request')
         axios({url: `${process.env.VUE_APP_APIURL}register`, data: user, method: 'POST' })
         .then(resp => {
-          console.log(resp)
           const token = resp.data.token
           const user = resp.data.user
           localStorage.setItem('token', token)
@@ -61,6 +60,7 @@ export default new Vuex.Store({
           resolve(resp)
         })
         .catch(err => {
+          console.log(err.data)
           commit('auth_error', err)
           localStorage.removeItem('token')
           reject(err)
@@ -87,7 +87,7 @@ export default new Vuex.Store({
         commit('auth_request')
         axios({url: `${process.env.VUE_APP_APIURL}verifyotp`, data: user, method: 'POST' })
         .then(resp => {
-          console.log(resp)
+          //console.log(resp)
           const token = resp.data.token
           const user = resp.data.user
           localStorage.setItem('token', token)

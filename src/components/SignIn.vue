@@ -11,6 +11,7 @@
                             <span class="red--text" v-if="!$v.form.mobile_number.required"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> The mobile number is required</span>
                             <span class="red--text" v-else-if="!$v.form.mobile_number.numeric"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> Only numeric value allowed</span>
                             <span class="red--text" v-else-if="!$v.form.mobile_number.minLength"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> Invalid mobile number</span>
+                            <span class="red--text" v-else-if="!$v.form.mobile_number.maxLength"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> Invalid mobile number</span>
                        </div>
                         <v-text-field
                             :disabled="sending"
@@ -18,7 +19,8 @@
                             label="Mobile Number"
                             outlined
                             dense
-                                v-model.trim="$v.form.mobile_number.$model"
+                            autofocus
+                            v-model.trim="$v.form.mobile_number.$model"
                         ></v-text-field>
                     </v-col>
                     <v-col cols="12" sm="12" md="12" class="pt-0 pb-0">
@@ -37,7 +39,9 @@
                         ></v-text-field>
                     </v-col> 
                     <v-col cols="12">
-                        <v-btn block  
+                        <v-btn block 
+                            :loading="sending"
+                            :disabled="sending"  
                             color="success"
                             class="white--text"
                             @click="validateSignIn"
@@ -53,6 +57,7 @@
 import {
     required,
     minLength,
+    maxLength,
     numeric
   } from 'vuelidate/lib/validators';
 
@@ -73,6 +78,7 @@ export default {
             mobile_number: {
                 required,
                 numeric,
+                maxLength: maxLength(10),
                 minLength: minLength(10)
             },
             password: {
@@ -87,15 +93,39 @@ export default {
             let mobile_number = this.form.mobile_number 
             let password = this.form.password
             this.$store.dispatch('login', { mobile_number, password })
-            .then(() => {
-                this.$router.push('/profile')
+            .then((res) => {
+                switch (res.data.status) {
+                    case 2:
+                        this.$router.push('/profile')
+                        break;
+                    case 3:
+                        this.sending = false;
+                        this.$swal({
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: `${res.data.data.mobile_number}<br>${res.data.data.password}`,
+                        });
+                        break;
+                    case 4:
+                        this.sending = false;
+                        this.$swal({
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: `${res.data.message}`,
+                        });
+                        this.form.mobile_number = '';
+                        this.form.password = '';
+                        break;
+                    default:
+                    break;
+                }
             })
             .catch(err => {
                 this.sending = false;
                 this.$swal({
                     icon: 'error',
                     title: 'Oops...',
-                    text: 'Incorrect Mobile number or Password',
+                    text: err,
                 });
                 console.log(err)
             })

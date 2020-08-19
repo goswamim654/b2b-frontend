@@ -13,7 +13,8 @@
             md="8"
             class="top-navigation"
           >
-           <v-btn text small>Logo</v-btn>
+            <v-btn text small v-if="logo"><img :src="logo" width="50" alt=""></v-btn>
+            <v-btn text small v-else>logo</v-btn>
           </v-col>
           <v-spacer></v-spacer>
           <v-col
@@ -25,8 +26,13 @@
           <div class="float-right top-navigation-menu">
             <PreSignUp v-model="showPreSignUp"/>
             <SignIn v-model="showSignIn"/>
-            <v-btn text small color="#fff" @click.stop="showSignIn=true">Sign In</v-btn>|
-            <v-btn text small color="#fff" @click.stop="showPreSignUp=true">Sign Up</v-btn>
+            <div v-if="user">
+              <v-btn text small color="#fff" @click="logout" class="float-right">Logout</v-btn>
+            </div>
+            <div v-else>
+              <v-btn text small color="#fff" @click.stop="showSignIn=true">Sign In</v-btn>|
+              <v-btn text small color="#fff" @click.stop="showPreSignUp=true">Sign Up</v-btn>
+            </div>
           </div>
           </v-col>
         </v-row>
@@ -71,7 +77,36 @@ export default {
   data () {
     return {
       showPreSignUp: false,
-      showSignIn: false
+      showSignIn: false,
+      user: '',
+      logo: '',
+      token: '',
+    }
+  },
+  methods: {
+    logout() {
+      this.$store.dispatch('logout')
+        .then(() => {
+          //this.$router.push('/')  
+          this.user= ''  
+        })
+        .catch(err => {
+            console.log(err)
+      })
+    },
+  },
+  created() {
+    this.token = localStorage.getItem('token')
+    if(this.token) {
+      this.$store.dispatch('getProfile')
+      .then((res) => {
+        console.log(res)
+        this.user = res.data.user
+        this.logo = this.user.logo_url
+      })
+      .catch(err => {
+          console.log(err)
+      })
     }
   },
   mounted() {

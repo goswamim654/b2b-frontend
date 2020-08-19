@@ -11,12 +11,8 @@
         >
           <template v-slot:prepend>
             <v-list-item two-line>
-              <v-list-item-avatar>
-                <img src="https://randomuser.me/api/portraits/women/81.jpg">
-              </v-list-item-avatar>
-
               <v-list-item-content>
-                <v-list-item-title>Jane Smith</v-list-item-title>
+                <v-list-item-title>Hi, {{mobile_number}}</v-list-item-title>
               </v-list-item-content>
             </v-list-item>
           </template>
@@ -42,7 +38,9 @@
             md="3"
             class="top-navigation"
           >
-           <v-btn text small>Logo</v-btn>
+
+            <v-btn text small v-if="logo"><img :src="logo" width="50" alt=""></v-btn>
+            <v-btn text small v-else>logo</v-btn>
           </v-col>
           <v-col
             cols="3"
@@ -89,6 +87,7 @@
                     label="Business Name *"
                     placeholder="Tomato Inc."
                     required
+                    autofocus
                   ></v-text-field>
                   <v-autocomplete
                     ref="business_category"

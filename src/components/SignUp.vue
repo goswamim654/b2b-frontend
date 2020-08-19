@@ -6,6 +6,7 @@
                 v-on="on"
                 color="success"
                 class="white--text pa-2"
+                user_type = "user_type"
             >
                 Register now
             </v-btn>
@@ -22,13 +23,15 @@
                                 <span class="red--text" v-if="!$v.form.mobile_number.required"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> The mobile number is required</span>
                                 <span class="red--text" v-else-if="!$v.form.mobile_number.numeric"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> Only numeric value allowed</span>
                                 <span class="red--text" v-else-if="!$v.form.mobile_number.minLength"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> Invalid mobile number</span>
+                                <span class="red--text" v-else-if="!$v.form.mobile_number.maxLength"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> Invalid mobile number</span>
                             </div>
                             <v-text-field
                                 class="mt-2"
                                 label="Mobile Number"
                                 outlined
                                 dense
-                                 v-model.trim="$v.form.mobile_number.$model"
+                                autofocus
+                                v-model.trim="$v.form.mobile_number.$model"
                                 :disabled="sending"
                             ></v-text-field>
                         </v-col>
@@ -61,7 +64,6 @@
                                     separator=""
                                     :shouldAutoFocus="true"
                                     @on-complete="handleOnComplete"
-                                    @on-change="handleOnChange"
                                     />
                                 </div>
                             </template>
@@ -69,17 +71,21 @@
                     </v-row>
                     <v-row>
                         <v-col cols="12" v-if="verify_otp">
-                            <v-btn block  
+                            <v-btn block 
+                                :loading="verifyOTPStatus"
+                                :disabled="verifyOTPStatus" 
                                 color="success"
                                 class="white--text"
                                 @click="verifyOTP"
                             >{{button_signup}}</v-btn>
                         </v-col>
                         <v-col cols="12" v-else>
-                            <v-btn block  
+                            <v-btn block 
+                                :loading="sending"
+                                :disabled="sending" 
                                 color="success"
                                 class="white--text"
-                                @click="validateSignUp"
+                                @click="validateSignUp(user_type)"
                             >{{button_signup}}</v-btn>
                         </v-col>
                     </v-row>
@@ -93,13 +99,16 @@
 import {
     required,
     minLength,
+    maxLength,
     numeric
   } from 'vuelidate/lib/validators';
 
 export default {
     name: 'SignUp',
+    props: ['user_type'],
     data () {
         return {
+        verifyOTPStatus: false,
         sending: false,
         otp: '',
         showSignUp: false,
@@ -107,7 +116,8 @@ export default {
         button_signup : 'Sign Up',
         form: {
                 mobile_number: '',
-                password: '' 
+                password: '' ,
+                user_type: ''
             }
         }
     },
@@ -116,7 +126,8 @@ export default {
             mobile_number: {
                 required,
                 numeric,
-                minLength: minLength(10)
+                minLength: minLength(10),
+                maxLength: maxLength(10)
             },
             password: {
                 required,
@@ -129,12 +140,29 @@ export default {
             this.sending = true;
             let data = {
                 mobile_number: this.form.mobile_number,
-                password: this.form.password
+                password: this.form.password,
+                user_type: this.form.user_type
             }
             this.$store.dispatch('register', data)
-            .then(() => {
-                this.verify_otp = true
-                this.button_signup = 'Confirm'
+            .then((res) => {
+                switch (res.data.status) {
+                    case 2:
+                        this.verify_otp = true
+                        this.button_signup = 'Confirm'
+                        break;
+                    case 3:
+                        this.sending = false;
+                        this.$swal({
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: res.data.data.mobile_number,
+                        });
+                        this.form.mobile_number = ''
+                        this.form.password = ''
+                        break;
+                    default:
+                    break;
+                }
 
                 //this.$router.push('/')
             })
@@ -144,18 +172,19 @@ export default {
                 this.$swal({
                     icon: 'error',
                     title: 'Oops...',
-                    text: 'Mobile number already exist',
+                    text: err,
                 });
             })
         },
-        validateSignUp () {
+        validateSignUp (user_type) {
             this.$v.$touch()
-
+            this.form.user_type = user_type
             if (!this.$v.$invalid) {
                 this.signUp()
             }
         },
         verifyOTP() {
+            this.verifyOTPStatus = true;
             let data = {
                 mobile_number: this.form.mobile_number,
                 password: this.form.password,
@@ -164,16 +193,30 @@ export default {
             }
             this.$store.dispatch('verifyOTP', data)
             .then((res) => {
-                console.log(res)
-                if(res.data.status == 'success')
-                    this.$router.push('/profile')
-                else
-                {
-                    this.$swal({
-                        icon: 'error',
-                        title: 'Oops...',
-                        text: 'Incorrect OTP',
-                    });
+                //console.log(res)
+                 switch (res.data.status) {
+                    case 2:
+                        this.$router.push('/profile')
+                        break;
+                    case 3:
+                        this.verifyOTPStatus = false;
+                        this.$swal({
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: res.data.data.otp,
+                        });
+                        break
+                    case 4:
+                        this.verifyOTPStatus = false;
+                        this.otp = '';
+                        this.$swal({
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: res.data.message,
+                        });
+                        break;
+                    default:
+                    break;
                 }
                     
             })
@@ -196,28 +239,28 @@ export default {
 
         handleOnComplete(value) {
             this.otp = value
-        },
-        handleOnChange(value) {
-            console.log("OTP: ", value);
         }
+    },
+    mounted() {
+        //console.log(this.user_type)
     }
 }
 </script>
 <style>
-.otp-input {
-  width: 40px;
-  height: 40px;
-  padding: 5px;
-  margin: 0 10px;
-  font-size: 20px;
-  border-radius: 4px;
-  border: 1px solid #1976d2;
-  text-align: "center";
-}
-.otp-input:focus {
-    border-color: #1976d2;
-}
-.error {
-  border: 1px solid red !important;
-}
+    .otp-input {
+        width: 40px;
+        height: 40px;
+        padding: 5px;
+        margin: 0 10px;
+        font-size: 20px;
+        border-radius: 4px;
+        border: 1px solid #1976d2;
+        text-align: "center";
+    }
+    .otp-input:focus {
+        border-color: #1976d2;
+    }
+    .error {
+        border: 1px solid red !important;
+    }
 </style>

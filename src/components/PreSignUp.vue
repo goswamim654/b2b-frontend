@@ -19,7 +19,7 @@
                     wholesalers & Distributor - Register Here
                 </v-card-text>
                 <v-card-actions class="mb-3 text-center d-block">
-                     <SignUp/>
+                     <SignUp user_type="b"/>
                 </v-card-actions>
             </v-col>
 
@@ -36,7 +36,7 @@
                     If you are a bussiness brand, Distributor, Wholesaler - Register Here
                 </v-card-text>
                 <v-card-actions class="mt-5 mb-3 text-center d-block">
-                     <SignUp/>
+                     <SignUp user_type="s"/>
                 </v-card-actions>
              </v-col>
         </v-row>
