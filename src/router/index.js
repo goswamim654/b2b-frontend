@@ -42,6 +42,14 @@ Vue.use(VueRouter)
     },
   },
   {
+    path: '/add-product',
+    name: 'AddProduct',
+    component: AddProduct,
+    meta: { 
+      requiresAuth: true
+    },
+  },
+  {
     path: '/add-product/:id',
     name: 'AddProduct',
     component: AddProduct,
@@ -61,8 +69,8 @@ Vue.use(VueRouter)
 
 const router = new VueRouter({
   mode: 'history',
-  //base: process.env.BASE_URL,
-  base: '/mukesh/b2b/',
+  base: process.env.BASE_URL,
+  //base: '/mukesh/b2b/',
   routes
 })
 
