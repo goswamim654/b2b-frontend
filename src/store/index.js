@@ -144,6 +144,121 @@ export default new Vuex.Store({
         })
       })
     },
+    getPreferences({commit}){
+      return new Promise((resolve, reject) => {
+        axios({url: `${process.env.VUE_APP_APIURL}getPreferences`, method: 'GET' })
+        .then(resp => {
+          //console.log(resp)
+          resolve(resp)
+        })
+        .catch(err => {
+          commit('auth_error', err)
+          localStorage.removeItem('token')
+          reject(err)
+        })
+      })
+    },
+    preferenceUpdate({commit}, user) {
+      return new Promise((resolve, reject) => {
+        commit('auth_request')
+        axios({url: `${process.env.VUE_APP_APIURL}updatePreferences`, data: user, method: 'POST' })
+        .then(resp => {
+          console.log(resp)
+          resolve(resp)
+        })
+        .catch(err => {
+          commit('auth_error', err)
+          localStorage.removeItem('token')
+          reject(err)
+        })
+      })
+    },
+    getProductCategories({commit}){
+      return new Promise((resolve, reject) => {
+        axios({url: `${process.env.VUE_APP_APIURL}getCartegories`, method: 'GET' })
+        .then(resp => {
+          //console.log(resp)
+          resolve(resp)
+        })
+        .catch(err => {
+          commit('auth_error', err)
+          localStorage.removeItem('token')
+          reject(err)
+        })
+      })
+    },
+    saveProduct({commit}, data) {
+      return new Promise((resolve, reject) => {
+        commit('auth_request')
+        axios({url: `${process.env.VUE_APP_APIURL}products`, data: data, method: 'POST' })
+        .then(resp => {
+          console.log(resp)
+          resolve(resp)
+        })
+        .catch(err => {
+          commit('auth_error', err)
+          localStorage.removeItem('token')
+          reject(err)
+        })
+      })
+    },
+    updateProduct({commit}, data) {
+      return new Promise((resolve, reject) => {
+        commit('auth_request')
+        axios({url: `${process.env.VUE_APP_APIURL}products/${data.id}`, data: data, method: 'PUT' })
+        .then(resp => {
+          console.log(resp)
+          resolve(resp)
+        })
+        .catch(err => {
+          commit('auth_error', err)
+          localStorage.removeItem('token')
+          reject(err)
+        })
+      })
+    },
+    getCities({commit}, state) {
+      return new Promise((resolve, reject) => {
+        commit('auth_request')
+        axios({url: `${process.env.VUE_APP_APIURL}getCities/${state}`, method: 'GET' })
+        .then(resp => {
+          console.log(resp)
+          resolve(resp)
+        })
+        .catch(err => {
+          commit('auth_error', err)
+          reject(err)
+        })
+      })
+    },
+    getProducts({commit}) {
+      return new Promise((resolve, reject) => {
+        commit('auth_request')
+        axios({url: `${process.env.VUE_APP_APIURL}products`, method: 'GET' })
+        .then(resp => {
+          console.log(resp)
+          resolve(resp)
+        })
+        .catch(err => {
+          commit('auth_error', err)
+          reject(err)
+        })
+      })
+    },
+    getProduct({commit}, id) {
+      return new Promise((resolve, reject) => {
+        commit('auth_request')
+        axios({url: `${process.env.VUE_APP_APIURL}products/${id}`, method: 'GET' })
+        .then(resp => {
+          //console.log(resp)
+          resolve(resp)
+        })
+        .catch(err => {
+          commit('auth_error', err)
+          reject(err)
+        })
+      })
+    },
   },
   modules: {
   },

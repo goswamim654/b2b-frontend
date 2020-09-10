@@ -3,71 +3,7 @@
     <v-main>
       <v-container
       >
-      <v-navigation-drawer
-          v-model="drawer"
-          absolute
-          right
-          temporary
-        >
-          <template v-slot:prepend>
-            <v-list-item two-line>
-              <v-list-item-content>
-                <v-list-item-title>Hi, {{mobile_number}}</v-list-item-title>
-              </v-list-item-content>
-            </v-list-item>
-          </template>
-
-          <v-divider></v-divider>
-
-          <v-list dense>
-            <v-list-item
-              v-for="item in items"
-              :key="item.title"
-            >
-              <v-list-item-content>
-                <v-btn><v-list-item-title @click="logout" >Logout</v-list-item-title></v-btn>
-              </v-list-item-content>
-            </v-list-item>
-          </v-list>
-        </v-navigation-drawer>
-        <v-row
-        >
-          <v-col
-            cols="3"
-            sm="3"
-            md="3"
-            class="top-navigation"
-          >
-
-            <v-btn text small v-if="logo"><img :src="logo" width="50" alt=""></v-btn>
-            <v-btn text small v-else>logo</v-btn>
-          </v-col>
-          <v-col
-            cols="3"
-            sm="6"
-            md="6"
-          >
-            <v-text-field
-              flat
-              solo-inverted
-              hide-details
-              append-icon="mdi-magnify"
-              label="Search your products"
-              class="hidden-sm-and-down"
-            ></v-text-field>
-          </v-col>
-          <v-col
-            cols="3"
-            sm="3"
-            md="3"
-            
-          >
-          <div class="float-right top-navigation-menu">
-            <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
-          </div>
-          </v-col>
-        </v-row>
-        <v-divider></v-divider>
+        <top-search-bar :mobile_number="mobile_number" :logo="logo" v-show="profile_update"/>
         <v-row justify="center">
           <v-col cols="12" sm="10" md="8" lg="6">
             <v-form
@@ -80,6 +16,7 @@
                 <v-divider></v-divider>
                 <v-card-text>
                   <v-text-field
+                    outlined
                     ref="business_name"
                     v-model="business_name"
                     :rules="[() => !! business_name || 'This field is required']"
@@ -90,6 +27,7 @@
                     autofocus
                   ></v-text-field>
                   <v-autocomplete
+                    outlined
                     ref="business_category"
                     v-model="business_category"
                     :items="business_categories"
@@ -97,6 +35,7 @@
                     placeholder="Selct Business Type or Category"
                   ></v-autocomplete>
                   <v-text-field
+                    outlined
                     ref="business_address"
                     v-model="business_address"
                     :rules="[
@@ -107,23 +46,29 @@
                     counter="25"
                     required
                   ></v-text-field>
-                  <v-text-field
+                  <v-autocomplete
+                    outlined
+                    ref="state"
+                    v-model="state"
+                    :rules="[() => !!state || 'This field is required']"
+                    :items="states"
+                    label="State *"
+                    placeholder="Select..."
+                    v-on:change="change_state"
+                    required
+                  ></v-autocomplete>
+                  <v-autocomplete
+                    outlined
                     ref="city"
                     v-model="city"
                     :rules="[() => !!city || 'This field is required']"
+                    :items="cities"
                     label="City *"
-                    placeholder="El Paso"
+                    placeholder="Select..."
                     required
-                  ></v-text-field>
+                  ></v-autocomplete>
                   <v-text-field
-                    ref="state"
-                    v-model="state"
-                    :rules="[() => !!state || 'This field is required',]"
-                    label="State/Province/Region *"
-                    required
-                    placeholder="TX"
-                  ></v-text-field>
-                  <v-text-field
+                    outlined
                     ref="zip"
                     v-model="zip"
                     :rules="[() => !!zip || 'This field is required',
@@ -134,6 +79,7 @@
                     placeholder="799383"
                   ></v-text-field>
                   <v-autocomplete
+                    outlined
                     ref="country"
                     v-model="country"
                     :rules="[() => !!country || 'This field is required']"
@@ -143,6 +89,7 @@
                     required
                   ></v-autocomplete>
                   <v-text-field
+                    outlined
                     ref="gst"
                     v-model="gst"
                     :rules="[() => !!gst || 'This field is required']"
@@ -153,6 +100,7 @@
                   <v-list class="ma-0 pa-0">
                     <v-list-item class="ma-0 pa-0">
                       <v-text-field
+                        outlined
                         ref="mobile_number"
                         v-model="mobile_number"
                         :rules="[() => !! mobile_number || 'This field is required',
@@ -163,12 +111,13 @@
                         placeholder="7812312369"
                         required
                       ></v-text-field>
-                      <v-btn @click="addRow" class="ml-2 float-right" color="success"><i class="fa fa-plus"></i></v-btn>
+                      <v-btn @click="addRow" class="ml-2 mb-7 float-right" color="success" x-large><i class="fa fa-plus"></i></v-btn>
                     </v-list-item>
                   </v-list>
                   <v-list class="ma-0 pa-0">
                     <v-list-item class="ma-0 pa-0" v-for="(contact, index) in contacts" :key="index">
                       <v-text-field
+                        outlined
                         ref="contact.one"
                         v-model="contact.one"
                         :rules="[() => !! contact.one || 'This field is required',
@@ -177,10 +126,11 @@
                         placeholder="7812312369"
                         required
                       ></v-text-field>
-                      <v-btn @click="deleteRow(index)" class="float-right ml-2" color="error"><i class="fa fa-minus"></i></v-btn>
+                      <v-btn @click="deleteRow(index)" class="float-right ml-2 mb-7" color="error" x-large><i class="fa fa-minus"></i></v-btn>
                     </v-list-item>
                   </v-list>
                   <v-text-field
+                    outlined
                     ref="email"
                     v-model="email"
                     :rules="[() => !! email || 'This field is required', 
@@ -232,24 +182,63 @@ import vueDropzone from 'vue2-dropzone'
 import 'vue2-dropzone/dist/vue2Dropzone.min.css'
 // @ is an alias to /src
 import Footer from '@/components/Footer.vue'
+import TopSearchBar from '@/components/TopSearchBar.vue'
 
 export default {
-  name: 'Home',
+  name: 'Profile',
   components: {
     Footer,
+    TopSearchBar,
     vueDropzone
   },
-  data () {
+ data () {
     return {
       user: null,
-      drawer: null,
+
       data: '',
       valid: true,
       contacts: [],
-      items: [
-        { title: 'logout', icon: 'gavel' },
-      ],
+      state_selceted: [],
       business_categories: ['abc','def', 'xyz'],
+      states: [ 
+        "Andhra Pradesh",
+        "Arunachal Pradesh",
+        "Assam",
+        "Bihar",
+        "Chhattisgarh",
+        "Goa",
+        "Gujarat",
+        "Haryana",
+        "Himachal Pradesh",
+        "Jammu and Kashmir",
+        "Jharkhand",
+        "Karnataka",
+        "Kerala",
+        "Madhya Pradesh",
+        "Maharashtra",
+        "Manipur",
+        "Meghalaya",
+        "Mizoram",
+        "Nagaland",
+        "Odisha",
+        "Punjab",
+        "Rajasthan",
+        "Sikkim",
+        "Tamil Nadu",
+        "Telangana",
+        "Tripura",
+        "Uttarakhand",
+        "Uttar Pradesh",
+        "West Bengal",
+        "Andaman and Nicobar Islands",
+        "Chandigarh",
+        "Dadra and Nagar Haveli",
+        "Daman and Diu",
+        "Delhi",
+        "Lakshadweep",
+        "Puducherry"
+      ],
+      cities:[] ,
       countries: ['Afghanistan', 'Albania', 'Algeria', 'Andorra', 'Angola', 'Anguilla', 'Antigua &amp; Barbuda', 'Argentina', 'Armenia', 'Aruba', 'Australia', 'Austria', 'Azerbaijan', 'Bahamas', 'Bahrain', 'Bangladesh', 'Barbados', 'Belarus', 'Belgium', 'Belize', 'Benin', 'Bermuda', 'Bhutan', 'Bolivia', 'Bosnia &amp; Herzegovina', 'Botswana', 'Brazil', 'British Virgin Islands', 'Brunei', 'Bulgaria', 'Burkina Faso', 'Burundi', 'Cambodia', 'Cameroon', 'Cape Verde', 'Cayman Islands', 'Chad', 'Chile', 'China', 'Colombia', 'Congo', 'Cook Islands', 'Costa Rica', 'Cote D Ivoire', 'Croatia', 'Cruise Ship', 'Cuba', 'Cyprus', 'Czech Republic', 'Denmark', 'Djibouti', 'Dominica', 'Dominican Republic', 'Ecuador', 'Egypt', 'El Salvador', 'Equatorial Guinea', 'Estonia', 'Ethiopia', 'Falkland Islands', 'Faroe Islands', 'Fiji', 'Finland', 'France', 'French Polynesia', 'French West Indies', 'Gabon', 'Gambia', 'Georgia', 'Germany', 'Ghana', 'Gibraltar', 'Greece', 'Greenland', 'Grenada', 'Guam', 'Guatemala', 'Guernsey', 'Guinea', 'Guinea Bissau', 'Guyana', 'Haiti', 'Honduras', 'Hong Kong', 'Hungary', 'Iceland', 'India', 'Indonesia', 'Iran', 'Iraq', 'Ireland', 'Isle of Man', 'Israel', 'Italy', 'Jamaica', 'Japan', 'Jersey', 'Jordan', 'Kazakhstan', 'Kenya', 'Kuwait', 'Kyrgyz Republic', 'Laos', 'Latvia', 'Lebanon', 'Lesotho', 'Liberia', 'Libya', 'Liechtenstein', 'Lithuania', 'Luxembourg', 'Macau', 'Macedonia', 'Madagascar', 'Malawi', 'Malaysia', 'Maldives', 'Mali', 'Malta', 'Mauritania', 'Mauritius', 'Mexico', 'Moldova', 'Monaco', 'Mongolia', 'Montenegro', 'Montserrat', 'Morocco', 'Mozambique', 'Namibia', 'Nepal', 'Netherlands', 'Netherlands Antilles', 'New Caledonia', 'New Zealand', 'Nicaragua', 'Niger', 'Nigeria', 'Norway', 'Oman', 'Pakistan', 'Palestine', 'Panama', 'Papua New Guinea', 'Paraguay', 'Peru', 'Philippines', 'Poland', 'Portugal', 'Puerto Rico', 'Qatar', 'Reunion', 'Romania', 'Russia', 'Rwanda', 'Saint Pierre &amp; Miquelon', 'Samoa', 'San Marino', 'Satellite', 'Saudi Arabia', 'Senegal', 'Serbia', 'Seychelles', 'Sierra Leone', 'Singapore', 'Slovakia', 'Slovenia', 'South Africa', 'South Korea', 'Spain', 'Sri Lanka', 'St Kitts &amp; Nevis', 'St Lucia', 'St Vincent', 'St. Lucia', 'Sudan', 'Suriname', 'Swaziland', 'Sweden', 'Switzerland', 'Syria', 'Taiwan', 'Tajikistan', 'Tanzania', 'Thailand', "Timor L'Este", 'Togo', 'Tonga', 'Trinidad &amp; Tobago', 'Tunisia', 'Turkey', 'Turkmenistan', 'Turks &amp; Caicos', 'Uganda', 'Ukraine', 'United Arab Emirates', 'United Kingdom', 'United States', 'Uruguay', 'Uzbekistan', 'Venezuela', 'Vietnam', 'Virgin Islands (US)', 'Yemen', 'Zambia', 'Zimbabwe'],
       dropzoneOptions: {
           url: 'https://httpbin.org/post',
@@ -273,25 +262,22 @@ export default {
       email: null,
       logo: null,
       formHasErrors: false,
+      profile_update: false,
     }
-  },
+  }, 
   computed: {
-    
+    filterIt(arr, searchKey) {
+      return arr.filter(obj => Object.keys(obj).some(key => obj[key].includes(searchKey)));
+    },
   },
   methods: {
-    logout() {
-      this.$store.dispatch('logout')
-        .then(() => {
-          this.$router.push('/')    
-        })
-        .catch(err => {
-            console.log(err)
-      })
-    },
     addRow() {
-      this.contacts.push({
-        one: ''
-      })
+      if(Object.keys(this.contacts).length < 2)
+      {
+        this.contacts.push({
+          one: ''
+        })
+      }
     },
     deleteRow(index) {
       this.contacts.splice(index,1)
@@ -330,6 +316,7 @@ export default {
       }
       this.$store.dispatch('profileUpdate', data)
       .then(() => {
+        this.profile_update = true
         //console.log(res)
         this.$swal({
             icon: 'success',
@@ -346,15 +333,28 @@ export default {
         });
       })
     },
+    change_state() {
+      this.$store.dispatch('getCities', this.state)
+      .then((res) => {
+        this.cities = res.data.data
+      })
+      .catch(err => {
+         // console.log(err)
+         this.$swal({
+            icon: 'error',
+            title: 'Oops...',
+            text: err,
+        });
+      })
+    },
   },
   created() {
-      this.$store.dispatch('getProfile')
+    this.$store.dispatch('getProfile')
       .then((res) => {
         this.user = res.data.user
         this.business_name = this.user.business_name
         this.business_category = this.user.business_category
         this.business_address = this.user.business_address
-        this.city = this.user.city
         this.state = this.user.state
         this.zip = this.user.zip
         this.country = this.user.country
@@ -370,13 +370,17 @@ export default {
           if(this.contact_numbers[i])
             this.contacts.push({one: this.contact_numbers[i]});
         }
+        if(this.user.status == 1)
+          this.profile_update = true
+        this.change_state();
+        this.city = this.user.city
       })
       .catch(err => {
           console.log(err)
       })
     },
     mounted() {
-      //console.log(this.logo)
+      //console.log(this.state_selected)
       
     }
 }

@@ -94,9 +94,13 @@ export default {
             let password = this.form.password
             this.$store.dispatch('login', { mobile_number, password })
             .then((res) => {
+                //console.log(res)
                 switch (res.data.status) {
                     case 2:
-                        this.$router.push('/profile')
+                        if(res.data.data.status == 0)
+                            this.$router.push('/profile')
+                        else
+                            this.$router.push('/dashboard')
                         break;
                     case 3:
                         this.sending = false;

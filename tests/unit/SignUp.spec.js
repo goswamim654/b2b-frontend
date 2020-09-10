@@ -10,6 +10,7 @@ const state = {
   user: {
     mobile_number: '8638522394',
     password: '12345678',
+    user_type: 's'
   }
 }
 
