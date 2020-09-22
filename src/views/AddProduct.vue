@@ -247,10 +247,11 @@ export default {
               product_images: this.product_images,
           }
           this.$store.dispatch('previewProduct', data)
-          .then((res) => {
+          .then(() => {
             this.valid = false;
             //console.log(res.data.data.id)
-            this.$router.push('/preview/'+ res.data.data.id)
+            window.open('/preview/1', '_blank');
+            //this.$router.push('/preview/'+ res.data.data.id)
             
           })
           .catch(err => {
