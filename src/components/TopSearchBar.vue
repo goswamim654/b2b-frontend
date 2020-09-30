@@ -9,7 +9,7 @@
             <template v-slot:prepend>
             <v-list-item two-line>
                 <v-list-item-content>
-                <v-list-item-title>Hello, {{mobile_number}}</v-list-item-title>
+                <v-list-item-title>Hello, {{business_name}}</v-list-item-title>
                 </v-list-item-content>
             </v-list-item>
             </template>
@@ -95,6 +95,7 @@
                 drawer: null,
                 user_type: null,
                 seller: false,
+                business_name: null,
         }
     },
     methods: {
@@ -111,8 +112,9 @@
     created() {
         this.$store.dispatch('getProfile')
             .then((res) => {
-            console.log(res)
+            //console.log(res)
             let user = res.data.data
+            this.business_name = user.business_name
             this.mobile_number = user.mobile_number
             this.logo = user.logo_url
             this.user_type = user.user_type

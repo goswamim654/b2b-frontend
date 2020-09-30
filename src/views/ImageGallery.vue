@@ -99,7 +99,7 @@ export default {
         },
         afterComplete(file) {
           this.uploadImages.push(file.dataURL)
-          //console.log(file.dataURL);
+          console.log(this.uploadImages);
         },
         saveImages() {
           let data = {
@@ -115,7 +115,7 @@ export default {
                 this.$swal({
                   icon: 'error',
                   title: 'Oops...',
-                  text: res.data.data.images[0],
+                  text: res.data.message,
               });
               break;
               case 2:
@@ -129,7 +129,7 @@ export default {
                 this.$swal({
                   icon: 'error',
                   title: 'Oops...',
-                  text: 'Something went wrong',
+                  text: res.data.message,
               });
               break;
               default:
