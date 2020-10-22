@@ -97,16 +97,9 @@ export default {
   },
   created() {
     this.token = localStorage.getItem('token')
+    //console.log(this.token)
     if(this.token) {
-      this.$store.dispatch('getProfile')
-      .then((res) => {
-        console.log(res)
-        this.user = res.data.user
-        this.logo = this.user.logo_url
-      })
-      .catch(err => {
-          console.log(err)
-      })
+      this.$router.push('/dashboard') 
     }
   },
   mounted() {
