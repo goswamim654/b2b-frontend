@@ -26,6 +26,7 @@
           <div class="float-right top-navigation-menu">
             <PreSignUp v-model="showPreSignUp"/>
             <SignIn v-model="showSignIn"/>
+            <ResetPassword v-model="showResetPassword"/>
             <div v-if="user">
               <v-btn text small color="#fff" @click="logout" class="float-right">Logout</v-btn>
             </div>
@@ -66,18 +67,21 @@
 import Footer from '@/components/Footer.vue'
 import PreSignUp from '@/components/PreSignUp.vue'
 import SignIn from '@/components/SignIn.vue'
+import ResetPassword from '@/components/ResetPassword.vue'
 
 export default {
   name: 'Home',
   components: {
     Footer,
     PreSignUp,
-    SignIn
+    SignIn,
+    ResetPassword
   },
   data () {
     return {
       showPreSignUp: false,
       showSignIn: false,
+      showResetPassword: false,
       user: '',
       logo: '',
       token: '',
@@ -103,7 +107,7 @@ export default {
     }
   },
   mounted() {
-    //console.log(process.env.VUE_APP_APIURL);
+    //console.log(this.$route.params.id);
   },
 }
 </script>

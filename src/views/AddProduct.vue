@@ -65,7 +65,7 @@
                         placeholder="Tax"
                     ></v-text-field>
                     <label for="">Upload your product photo(s)</label>
-                    <image-gallery @onImageSelected ="onImageSelected($event)"/>
+                    <image-gallery @onImageSelected ="onImageSelected($event)" v-model="showImageGallery"/>
                     <vue-dropzone ref="myVueDropzone" id="dropzone" :options="dropzoneOptions" @vdropzone-complete="afterComplete"></vue-dropzone>
                     <v-row class="mt-4" v-for="(product, index) in products" v-bind:key="index">
                         <v-col :sm="unit_inputbox_length">

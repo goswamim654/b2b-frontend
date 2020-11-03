@@ -102,10 +102,41 @@ export default new Vuex.Store({
         })
       })
     },
+    sendResetPasswordLink({commit}, user){
+      return new Promise((resolve, reject) => {
+        commit('auth_request')
+        axios({url: `${process.env.VUE_APP_APIURL}sendResetPasswordLink`, data: user, method: 'POST' })
+        .then(resp => {
+          console.log(resp)
+          resolve(resp)
+        })
+        .catch(err => {
+          commit('auth_error', err)
+          //localStorage.removeItem('token')
+          reject(err)
+        })
+      })
+    },
+    resetPassword({commit}, data){
+      return new Promise((resolve, reject) => {
+        commit('auth_request')
+        axios({url: `${process.env.VUE_APP_APIURL}resetPassword`, data: data, method: 'POST' })
+        .then(resp => {
+          console.log(resp)
+          resolve(resp)
+        })
+        .catch(err => {
+          commit('auth_error', err)
+          //localStorage.removeItem('token')
+          reject(err)
+        })
+      })
+    },
     logout({commit}){
       return new Promise((resolve) => {
         commit('logout')
         localStorage.removeItem('token')
+        localStorage.removeItem('user_account')
         delete axios.defaults.headers.common['Authorization']
         resolve()
       })
@@ -404,6 +435,32 @@ export default new Vuex.Store({
       return new Promise((resolve, reject) => {
         commit('auth_request')
         axios({url: `${process.env.VUE_APP_APIURL}getSearchResult`, data: data, method: 'POST' })
+        .then(resp => {
+          //console.log(resp)
+          resolve(resp)
+        })
+        .catch(err => {
+          commit('auth_error', err)
+          reject(err)
+        })
+      })
+    },
+    becomeBuyer({commit}){
+      return new Promise((resolve, reject) => {
+        axios({url: `${process.env.VUE_APP_APIURL}updateUserType`, method: 'GET' })
+        .then(resp => {
+          //console.log(resp)
+          resolve(resp)
+        })
+        .catch(err => {
+          commit('auth_error', err)
+          reject(err)
+        })
+      })
+    },
+    becomeSeller({commit}){
+      return new Promise((resolve, reject) => {
+        axios({url: `${process.env.VUE_APP_APIURL}updateUserType`, method: 'GET' })
         .then(resp => {
           //console.log(resp)
           resolve(resp)

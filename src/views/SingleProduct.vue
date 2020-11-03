@@ -13,7 +13,7 @@
                         <img :src="logo" width="50" alt=""> 
                       </v-col>
                       <v-col cols="12" sm="3">
-                        <v-btn class="float-right mt-2">Order Quantity [{{order_quantity}}]</v-btn>
+                        <v-btn class="float-right mt-2">Order Quantity [{{totalQuantity}}]</v-btn>
                       </v-col>
                       <v-col cols="12" sm="4" class="float-right">
                          <v-autocomplete

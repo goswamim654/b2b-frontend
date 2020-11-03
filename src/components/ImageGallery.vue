@@ -1,5 +1,5 @@
 <template>
-    <v-dialog v-model="show" max-width="800px">
+    <v-dialog v-model="showImageGallery" max-width="800px">
         <template v-slot:activator="{ on, attrs }" class="text-right">
             <v-btn
                 v-bind="attrs"
@@ -13,7 +13,7 @@
             </v-btn>
         </template>
         <v-card>
-            <v-card-title>Image Gallery <v-spacer></v-spacer><v-btn text small @click="show=false"><i class="fa fa-times" aria-hidden="true"></i></v-btn></v-card-title>
+            <v-card-title>Image Gallery <v-spacer></v-spacer><v-btn text small @click="showImageGallery=false"><i class="fa fa-times" aria-hidden="true"></i></v-btn></v-card-title>
             <v-divider></v-divider>
             <v-card-text>
                  <v-container fluid>
@@ -62,6 +62,7 @@ export default {
     data() {
         return {
             images: [],
+            showImageGallery: false
         }
     },
     computed: {
