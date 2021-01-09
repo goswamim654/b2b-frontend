@@ -230,8 +230,8 @@ Vue.use(VueRouter)
 const router = new VueRouter({
   mode: 'history',
   //mode: '#',
-  base: process.env.BASE_URL,
-  //base: '/mukesh/b2b/',
+  //base: process.env.BASE_URL,
+  base: '/mukesh/b2b/',
   routes
 })
 

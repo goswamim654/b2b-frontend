@@ -863,6 +863,20 @@ export default new Vuex.Store({
         })
       })
     },
+    orderFullfilledDetails({commit}, order_id) {
+      return new Promise((resolve, reject) => {
+        commit('auth_request')
+        axios({url: `${process.env.VUE_APP_APIURL}orderFullfilledDetails/${order_id}`, method: 'GET' })
+        .then(resp => {
+          //console.log(resp)
+          resolve(resp)
+        })
+        .catch(err => {
+          commit('auth_error', err)
+          reject(err)
+        })
+      })
+    },
   },
   modules: {
   },

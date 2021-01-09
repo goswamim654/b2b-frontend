@@ -14,6 +14,7 @@
                     color="deep-purple accent-4"
                   >
                     <v-tab>Pending Orders ({{pending_orders.length}})</v-tab>
+                    <v-tab>Fullfilled Orders</v-tab>
                     <v-tab>All Orders</v-tab>
                      <v-tab-item
                     >
@@ -58,7 +59,7 @@
                                 color="primary mt-10"
                                 @click="showItemShippingDialog($event, order.id, order.user_id, 'b')"
                               >
-                                Item is shipped
+                                Ship This Item
                               </v-btn>
                               <ItemNotAvailable v-model="showItemNotAvailable"/>
                               <v-btn
@@ -116,21 +117,52 @@
                             <v-card-subtitle class="pb-0 pt-0">{{order.buyer[0].city}} - {{order.buyer[0].zip}}</v-card-subtitle>
                           </v-col>
                             <v-col cols="12" md="3">
-                              <ItemShipping @update_orders="update_orders" v-model="showItemShipping" message_type="o" :user_type="dialog_user_type" :order_id="dialog_order_id" :user_id="dialog_user_id"/>
+                              <ItemDetails v-model="showItemDetails" :order_id="dialog_order_id" :order_date="order_date" :dispatched_date="dispatched_date" :message="message"/>
                               <v-btn
                                 block
-                                color="primary mt-10"
-                                @click="showItemShippingDialog($event, order.id, order.user_id, 'b')"
+                                color="success mt-10"
+                                @click="showItemDetailsDialog($event, order.id)"
                               >
-                                Item is shipped
+                                Order is fulfilled
                               </v-btn>
-                              <v-btn
-                                block
-                                color="primary mt-10"
-                                :to="{ name: 'Messages', params: { id: order.id }}"
-                              >
-                                Message ( {{order.messageCount}} )
-                              </v-btn>
+                          </v-col>
+                          <v-divider></v-divider>
+                        </v-row>
+                      </v-container>
+                    </v-tab-item>
+                     <v-tab-item
+                    >
+                      <v-container fluid>
+                        <v-row 
+                          v-for="order in orders" 
+                          :key="order.id"
+                          >
+                          <v-col cols="12" md="4">
+                            <div v-if="order.product.units[0].photos[0]">
+                              <v-img :src="order && order.product.units[0].photos[0] ? order.product.units[0].photos[0].photo_url : null" width="200"></v-img>
+                            </div>
+                            <div v-else>
+                              <v-img src="@/assets/no-image.png" width="200" alt="no-image"></v-img>
+                            </div>
+                          </v-col>
+                          <v-col cols="12" md="4">
+                            <v-card-subtitle class="subtitle-2 text-blue font-weight-bold blue--text darken-2 mb-0 pb-0 mt-10">{{order.product.name}}</v-card-subtitle>
+                            <v-card-subtitle class="subtitle-2 text-blue font-weight-bold blue--text darken-2 mb-0 pb-0"> Quantity: {{order.quantity}}</v-card-subtitle>
+                            <v-card-subtitle class="subtitle-2 text-blue font-weight-bold blue--text darken-2 mb-0 pb-0">Price: <i class="fa fa-inr" aria-hidden="true"></i> &#8377; {{ order.price | formatPrice }} </v-card-subtitle>
+                          </v-col>
+                          <v-col cols="12" md="4">
+                            <v-card-subtitle class="font-weight-black mt-10 mb-0 pb-0">
+                              Buyer: {{order.buyer[0].business_name}}
+                            </v-card-subtitle>
+                            <v-card-subtitle class="font-weight-medium mb-0 pb-0">
+                              Order date: {{ order.created_at | formatDate}} <br> Order no. # {{order.id}}
+                            </v-card-subtitle>
+                            <v-card-subtitle class="font-weight-medium mb-0 pb-0 blue--text">
+                              Shipping Address: 
+                            </v-card-subtitle>
+                             <v-card-subtitle class="pb-0 pt-0">{{order.buyer[0].business_name}}</v-card-subtitle>
+                            <v-card-subtitle class="pb-0 pt-0">{{order.buyer[0].business_address}}</v-card-subtitle>
+                            <v-card-subtitle class="pb-0 pt-0">{{order.buyer[0].city}} - {{order.buyer[0].zip}}</v-card-subtitle>
                           </v-col>
                           <v-divider></v-divider>
                         </v-row>
@@ -158,6 +190,7 @@ import Footer from '@/components/Footer.vue'
 import TopSearchBar from '@/components/TopSearchBar.vue'
 import ItemShipping from '@/components/ItemShipping.vue'
 import ItemNotAvailable from '@/components/ItemNotAvailable.vue'
+import ItemDetails from '@/components/ItemDetails.vue'
 
 export default {
     name: 'OrderHistory',
@@ -165,17 +198,22 @@ export default {
         Footer,
         TopSearchBar,
         ItemShipping,
-        ItemNotAvailable
+        ItemNotAvailable,
+        ItemDetails
     },
     data () {
         return {
           showItemShipping: false,
           showItemNotAvailable: false,
+          showItemDetails: false,
           pending_orders: [],
           orders: [],
           dialog_user_type: null,
           dialog_order_id: null,
           dialog_user_id: null,
+          order_date: null,
+          message: null,
+          dispatched_date: null,
         }
     }, 
     computed: {
@@ -244,6 +282,33 @@ export default {
         this.dialog_order_id= order_id,
         this.dialog_user_id = user_id,
         this.showItemShipping = true
+      },
+      showItemDetailsDialog(e, order_id) {
+        this.$store.dispatch('orderFullfilledDetails', order_id)
+            .then((res) => {
+                switch (res.data.status) {
+                    case 2:
+                        this.message = res.data.data.message
+                        this.order_date = res.data.data.created_at
+                        this.dispatched_date = res.data.data.dispatched_date
+                        this.dialog_order_id= order_id,
+                        this.showItemDetails = true
+                        break;
+                    case 3:
+                        this.$swal({
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: res.data.message,
+                        });
+                        break;
+                    default:
+                    break;
+                }
+                //console.log(res.data.data)
+            })
+        .catch(err => {
+            console.log(err)
+        })
       },
     },
     created() {

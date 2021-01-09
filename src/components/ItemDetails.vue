@@ -11,8 +11,15 @@
                     md="12"
                     class=""
                 >
-                    <v-card-text class="text-center">
-                        We have informed the Buyer that this Product is not available
+                <v-card-title class="text-center d-block
+                mt-2">
+                    Fulfilled Order Details
+                </v-card-title>
+                    <v-card-text>
+                        <p>Order No. {{order_id}}</p>
+                        <p>Order Date: {{order_date | formatDate}}</p>
+                        <p v-if="message">Message: {{message}}</p>
+                        <p>Shipped Date: {{dispatched_date | formatDate}}</p>
                     </v-card-text>
                     <v-card-actions class="mb-3 text-center d-block">
                         <v-btn small @click.stop="show=false">Close</v-btn>
@@ -31,7 +38,11 @@
 
 export default {
     props: {
-        value: Boolean
+        value: Boolean,
+        order_id: Number,
+        message: String,
+        dispatched_date: String,
+        order_date: String
     },
     computed: {
         show: {
@@ -44,10 +55,10 @@ export default {
         }
     },
     methods: {
-        showItemNotAvailable() {
-            this.$emit('showItemNotAvailable')
+        showItemDetails() {
+            this.$emit('showItemDetails')
         }
-  }
+    },
 }
 </script>
 <style>
